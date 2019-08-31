@@ -1,19 +1,19 @@
 package br.edu.unoesc;
 
-class ChatMessage {
+public class ChatMessage {
   private String from;
   private String message;
 
-  ChatMessage(String from, String message) {
+  public ChatMessage(String from, String message) {
     this.from = from;
     this.message = message;
   }
 
-  String getFrom() {
+  public String getFrom() {
     return from;
   }
 
-  String getMessage() {
+  public String getMessage() {
     return message;
   }
 }

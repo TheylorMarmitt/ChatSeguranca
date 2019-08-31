@@ -6,21 +6,17 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.textfield.TextField;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.PWA;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
 @StyleSheet("frontend://styles/styles.css")
-@Route
-@PWA(name = "Vaadin Chat", shortName = "Vaadin Chat")
+@Route("inicial")
 @Push
 public class MainView extends VerticalLayout {
 
@@ -42,24 +38,9 @@ public class MainView extends VerticalLayout {
 
     add(header);
 
-    askUsername();
+    showChat();
   }
 
-  private void askUsername() {
-    HorizontalLayout layout = new HorizontalLayout();
-    TextField usernameField = new TextField();
-    Button startButton = new Button("Start chat");
-
-    layout.add(usernameField, startButton);
-
-    startButton.addClickListener(click -> {
-      username = usernameField.getValue();
-      remove(layout);
-      showChat();
-    });
-
-    add(layout);
-  }
 
   private void showChat() {
     MessageList messageList = new MessageList();

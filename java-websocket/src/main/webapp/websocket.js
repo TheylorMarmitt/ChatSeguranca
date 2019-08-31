@@ -6,7 +6,8 @@ function connect() {
     var host = document.location.host;
     var pathname = document.location.pathname;
     
-    ws = new WebSocket("ws://" +host  + pathname + "chat/" + username);
+    ws = new WebSocket("ws://" +host  + pathname + "batepapo.html/" + username);
+    console.log(ws);
 
     ws.onmessage = function(event) {
     var log = document.getElementById("log");

@@ -18,7 +18,7 @@ import com.baeldung.model.Message;
 
 import br.edu.unoesc.service.CertificadoService;
 
-@ServerEndpoint(value = "/batepapo.html/chat/{username}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
+@ServerEndpoint(value = "/batepapo.html/{username}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
 public class ChatEndpoint {
     private Session session;
     private CertificadoService service = new CertificadoService();

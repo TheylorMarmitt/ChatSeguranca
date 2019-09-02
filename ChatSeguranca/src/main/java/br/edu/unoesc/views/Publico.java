@@ -1,6 +1,7 @@
 package br.edu.unoesc.views;
 
 import br.edu.unoesc.*;
+import br.edu.unoesc.service.CertificadoService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.UnicastProcessor;
 
@@ -10,26 +11,20 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.PWA;
-
 
 @StyleSheet("frontend://styles/styles.css")
 @Route("publico")
-@Push
 public class Publico extends VerticalLayout{
 
 private static final long serialVersionUID = -2294292083024384647L;
 	
 	private final UnicastProcessor<ChatMessage> publisher;
 	private final Flux<ChatMessage> messages;
+	private CertificadoService service = new CertificadoService();
 	private String username;
 
 	public Publico(UnicastProcessor<ChatMessage> publisher, Flux<ChatMessage> messages) {
@@ -43,8 +38,11 @@ private static final long serialVersionUID = -2294292083024384647L;
 		header.getElement().getThemeList().add("dark");
 
 		add(header);
-
-		showChat();
+		if(service.buscaCertificado()) {
+			showChat();
+		}else {
+			getUI().get().navigate("autenticacao");
+		}
 	}
 
 	private void showChat() {

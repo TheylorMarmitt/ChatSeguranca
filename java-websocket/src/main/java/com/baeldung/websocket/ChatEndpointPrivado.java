@@ -1,6 +1,8 @@
 package com.baeldung.websocket;
 
 import java.io.IOException;
+import java.net.HttpCookie;
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -13,6 +15,9 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import javax.xml.ws.spi.http.HttpExchange;
+
+import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import com.baeldung.model.Message;
 
@@ -63,7 +68,7 @@ public class ChatEndpointPrivado {
 
     @OnError
     public void onError(Session session, Throwable throwable) {
-        // Do error handling here
+        
     }
 
     private static void broadcast(Message message) throws IOException, EncodeException {

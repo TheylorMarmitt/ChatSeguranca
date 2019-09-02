@@ -6,8 +6,12 @@ function connect() {
     var host = document.location.host;
     var pathname = document.location.pathname;
     
-    console.log();
     ws = new WebSocket("ws://" +host  + pathname +"/" + username);
+    console.log(ws);
+    
+    if(ws.onopen == null){
+    	window.location.href = "http://localhost:8080/java-websocket/conectar.html";
+    }
 
     ws.onmessage = function(event) {
     var log = document.getElementById("log");

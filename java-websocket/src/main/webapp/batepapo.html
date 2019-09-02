@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <title>Chat</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
-
+<div class="conteiner-fluid align" align="center" style="margin-top:150px;">
 	<table>
 		<tr>
 			<td colspan="2"><input type="text" id="username"
 				placeholder="Username" />
-				<button type="button" onclick="connect();">Connect</button></td>
+				<button type="button" onclick="connect();">Conectar</button></td>
 		</tr>
 		<tr>
 			<td><textarea readonly="true" rows="10" cols="80" id="log"></textarea>
@@ -18,10 +19,10 @@
 		</tr>
 		<tr>
 			<td><input type="text" size="51" id="msg" placeholder="Message" />
-				<button type="button" onclick="send();">Send</button></td>
+				<button type="button" onclick="send();">Enviar</button></td>
 		</tr>
 	</table>
-
+</div>
 </body>
 
 <script src="websocket.js"></script>

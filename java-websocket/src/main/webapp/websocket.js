@@ -8,7 +8,6 @@ function connect() {
     
     console.log();
     ws = new WebSocket("ws://" +host  + pathname +"/" + username);
-    console.log(ws);
 
     ws.onmessage = function(event) {
     var log = document.getElementById("log");

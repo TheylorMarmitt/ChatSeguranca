@@ -16,23 +16,34 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.baeldung.model.Message;
 
+import br.edu.unoesc.service.CertificadoService;
+
 @ServerEndpoint(value = "/batepapo.html/{username}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
 public class ChatEndpoint {
     private Session session;
+    private CertificadoService service = new CertificadoService();
     private static final Set<ChatEndpoint> chatEndpoints = new CopyOnWriteArraySet<>();
     private static HashMap<String, String> users = new HashMap<>();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) throws IOException, EncodeException {
+    	
+    	boolean temCertificado = service.buscaCertificado();
+    	if(temCertificado) {
 
-        this.session = session;
-        chatEndpoints.add(this);
-        users.put(session.getId(), username);
+        	
+        	this.session = session;
+        	chatEndpoints.add(this);
+        	users.put(session.getId(), username);
+        	
+        	Message message = new Message();
+        	message.setFrom(username);
+        	message.setContent("Connected!");
+        	broadcast(message);
+    	}else {
+    		
+    	}
 
-        Message message = new Message();
-        message.setFrom(username);
-        message.setContent("Connected!");
-        broadcast(message);
     }
 
     @OnMessage

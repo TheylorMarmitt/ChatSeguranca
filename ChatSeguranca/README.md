@@ -1,3 +1,3 @@
-# Reactive chat application tutorial
+# Chat usando Vaadin
 
-Text and video version of tutorial: https://vaadin.com/tutorials/reactive-chat-app
+retirado do tutorial: https://vaadin.com/tutorials/reactive-chat-app

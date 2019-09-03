@@ -1,3 +1,4 @@
+package br.edu.unoesc.util;
 //package com.baeldung.websocket;
 //
 //import java.io.File;

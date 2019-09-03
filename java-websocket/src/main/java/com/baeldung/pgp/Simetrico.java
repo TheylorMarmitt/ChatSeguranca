@@ -1,23 +1,36 @@
 package com.baeldung.pgp;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 public class Simetrico {
 	private static Cipher cipher = null;
 
-	static byte[] encrypt(byte[] plainTextByte, SecretKey secretKey)
-			throws Exception {
+	public String encrypt(String texto, String chave) throws Exception {
+		// converte texto em bytes
+		byte[] plainTextByte = texto.getBytes("UTF8");
+		//cria secretKey com chave
+		KeyGenerator keyGenerator = KeyGenerator.getInstance(chave);
+		keyGenerator.init(168);
+		SecretKey secretKey = keyGenerator.generateKey();
+		// encripta
 		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 		byte[] encryptedBytes = cipher.doFinal(plainTextByte);
-		return encryptedBytes;
+		return new String(encryptedBytes);
 	}
 
-	static byte[] decrypt(byte[] encryptedBytes, SecretKey secretKey)
-			throws Exception {
+	public String decrypt(String texto, String chave) throws Exception {
+		
+		byte[] plainTextByte = texto.getBytes("UTF8");
+		
+		KeyGenerator keyGenerator = KeyGenerator.getInstance(chave);
+		keyGenerator.init(168);
+		SecretKey secretKey = keyGenerator.generateKey();
+		// decripta
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);
-		byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-		return decryptedBytes;
+		byte[] decryptedBytes = cipher.doFinal(plainTextByte);
+		return new String(decryptedBytes, "UTF8");
 	}
 	
 	/**

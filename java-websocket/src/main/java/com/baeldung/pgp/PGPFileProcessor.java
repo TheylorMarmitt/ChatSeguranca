@@ -1,3 +1,10 @@
+/**
+ * 
+ *  Faz a encriptação e decriptação com arquivos 
+ *  GnuPGActions faz com texto
+ * 
+ */
+
 package com.baeldung.pgp;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

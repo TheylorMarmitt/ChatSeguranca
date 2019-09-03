@@ -45,6 +45,6 @@ public class GnuPGActions {
 		else{
 			return pgp.getErrorString();
 		}
-	}	
+	}
 	
 }

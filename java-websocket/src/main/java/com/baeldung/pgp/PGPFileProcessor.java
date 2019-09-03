@@ -1,7 +1,7 @@
 /**
  * 
- *  Faz a encriptação e decriptação com arquivos 
- *  GnuPGActions faz com texto
+ *  Faz a encriptação e decriptação com arquivos  /// GnuPGActions faz com texto
+ *  
  * 
  */
 

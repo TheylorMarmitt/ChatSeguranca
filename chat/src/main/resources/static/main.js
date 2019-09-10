@@ -107,18 +107,6 @@ function onMessageReceived(payload) {
     messageArea.scrollTop = messageArea.scrollHeight;
 }
 
-function descriptar(messege){
-	
-	$.ajax({
-	      url: 'descriptar',
-	      data: { mensagem : message.content},
-		  dataType: 'json'
-	      
-	    }).done(function (result) {
-	    	this.message.content = result; 
-	    })
-}
-
 
 function getAvatarColor(messageSender) {
     var hash = 0;

@@ -14,11 +14,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.edu.unoesc.chat.model.ChatMessage;
+import br.edu.unoesc.chat.pgp.Simetrico;
 import br.edu.unoesc.chat.service.CertificadoService;
 
 @Controller
@@ -26,6 +29,8 @@ public class ChatController {
 
 	@Autowired
 	private CertificadoService certificadoService;
+	
+	private Simetrico simetrico = new Simetrico();
 
 	@GetMapping("/geral")
 	public String geral(@RequestParam(value="nome") String nome, Model model) {
@@ -55,12 +60,12 @@ public class ChatController {
 	
 	@PostMapping(value = "/arquivo")
 	@ResponseStatus(value=HttpStatus.OK)
-	public void salvar(@RequestParam("file") MultipartFile file) throws IOException{
+	public void salvar(@RequestParam("file") MultipartFile file, String frase) throws IOException{
 		
 		String path = System.getProperty("user.home") + File.separator + "Documents" + File.separator
 				+ "certificado";
 		File novoArquivo = new File(path + File.separator + file.getOriginalFilename());
-		System.out.println(novoArquivo);
+		
 		boolean criado;
 
 		byte[] bs = file.getBytes();
@@ -71,6 +76,21 @@ public class ChatController {
 		} catch (IOException erro) {
 			System.out.println("erro ======== " + erro);
 		}
+		
+		File fileFrase = new File(path + File.separator + "frase.txt");
+		
+		boolean criar;
+
+		byte[] bite = frase.getBytes();
+		try {
+			criar = fileFrase.createNewFile();
+			FileUtils.writeByteArrayToFile(fileFrase, bite);
+			System.out.println("arquivo criado ========= " + criar);
+		} catch (IOException erro) {
+			System.out.println("erro ======== " + erro);
+		}
+
+		
 	}    
 	
 	
@@ -81,8 +101,29 @@ public class ChatController {
 	@MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload br.edu.unoesc.chat.model.ChatMessage chatMessage) {
+
+		try {
+			String encriptado = simetrico.encrypt(chatMessage.getContent(), "senha");
+			chatMessage.setContent(encriptado);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
         return chatMessage;
+		
     }
+	
+	@RequestMapping(path = "/decriptar")
+	public @ResponseBody String decriptar(String mensagem) {
+		String msgResult = "";
+		try {
+			msgResult = simetrico.decrypt(mensagem, "senha");	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return msgResult;
+	}	
 
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")

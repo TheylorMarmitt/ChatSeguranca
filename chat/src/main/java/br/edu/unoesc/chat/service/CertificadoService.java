@@ -10,9 +10,7 @@ public class CertificadoService {
 
 	public boolean buscaCertificado() {
 		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
-		File certificado = new File(path);
-		
-		// if private_key existe == true 
+		File certificado = new File(path + File.separator + "private_key.asc");		 
 		if(certificado.exists()) {
 			
 			return true;

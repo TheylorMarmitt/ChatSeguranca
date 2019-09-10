@@ -91,15 +91,32 @@ function onMessageReceived(payload) {
         usernameElement.appendChild(usernameText);
         messageElement.appendChild(usernameElement);
     }
-
-    var textElement = document.createElement('p');
-    var messageText = document.createTextNode(message.content);
-    textElement.appendChild(messageText);
-
-    messageElement.appendChild(textElement);
+    
+    $.ajax({
+		  url: 'decriptar',
+		  data: { mensagem : message.content},
+		  success: function(result) {
+			  var textElement = document.createElement('p');
+			  var messageText = document.createTextNode(result);
+			  textElement.appendChild(messageText);
+			  messageElement.appendChild(textElement);
+		  }
+	});
 
     messageArea.appendChild(messageElement);
     messageArea.scrollTop = messageArea.scrollHeight;
+}
+
+function descriptar(messege){
+	
+	$.ajax({
+	      url: 'descriptar',
+	      data: { mensagem : message.content},
+		  dataType: 'json'
+	      
+	    }).done(function (result) {
+	    	this.message.content = result; 
+	    })
 }
 
 

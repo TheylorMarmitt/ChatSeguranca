@@ -14,6 +14,10 @@ var colors = [
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
+
+
+var pubKey, privKey;
+
 function connect(event) {
     username = $('#nome').val().trim();
 
@@ -22,9 +26,52 @@ function connect(event) {
         var socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
+        // gerando chaves
+        var options = {
+		  userIds: [{ name: username, email: username+"@unoesc.br" }],
+		  numBits: 2048,
+		  passphrase: "chave"
+		}
+        		
+        openpgp.generateKey(options).then(key => {		
+        	privKey = key.privateKeyArmored
+			pubKey = key.publicKeyArmored
+        		  
+			console.log('Key generated')
+			
+			var message = "secret message";
+        	const encryptMessage  = async() => {
+        				
+    				var dados = {
+    						message: openpgp.message.fromText(message),
+    						publicKeys: (await openpgp.key.readArmored(pubKey)).keys
+    				};
+
+    				openpgp.encrypt(dados).then(ciphertext => {
+    					alert(ciphertext.data);
+
+    				})
+        			
+        		}
+        	})
+
+		
+
+        // fim de gerador de chaves
+		
+		// teste encrypt
+		
+		
+		//
+		
+		
+		
+		
         stompClient.connect({}, onConnected, onError);
     }
+    
     event.preventDefault();
+    
 }
 
 
@@ -55,9 +102,12 @@ function sendMessage(event) {
         var chatMessage = {
             sender: username,
             content: messageInput.value,
+            chave: pubKey,
             type: 'CHAT'
         };
-
+        
+        console.log(chatMessage);
+        
         stompClient.send("/app/chat.sendMessagePrivado", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }

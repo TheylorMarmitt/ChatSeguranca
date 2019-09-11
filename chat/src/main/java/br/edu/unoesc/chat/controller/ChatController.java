@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.edu.unoesc.chat.model.ChatMessage;
-import br.edu.unoesc.chat.pgp.GnuPGActions;
 import br.edu.unoesc.chat.pgp.Simetrico;
 import br.edu.unoesc.chat.service.CertificadoService;
 
@@ -33,8 +32,6 @@ public class ChatController {
 	
 	private Simetrico simetrico = new Simetrico();
 	
-	private GnuPGActions gpg = new GnuPGActions();
-
 	@GetMapping("/geral")
 	public String geral(@RequestParam(value="nome") String nome, Model model) {
 		if(!certificadoService.buscaCertificado()) {

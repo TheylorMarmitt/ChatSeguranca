@@ -15,8 +15,8 @@ var colors = [
 ];
 
 
-
-var pubKey, privKey;
+var pubKey;
+var privKey;
 
 function connect(event) {
     username = $('#nome').val().trim();
@@ -26,46 +26,95 @@ function connect(event) {
         var socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
-        // gerando chaves
+        /** gerando chaves */
+        
+//        var opcoes = {
+//		  userIds: [{ name: username, email: username+"@unoesc.br" }],
+//		  numBits: 2048,
+//		  passphrase: "chave"
+//		}
+//        		
+//        openpgp.generateKey(opcoes).then(key => {		
+//        	privKey = key.privateKeyArmored
+//			pubKey = key.publicKeyArmored
+//        		  
+//			console.log('Key generated')			
+//        })
+//        console.log(pubKey)
+        
+        
+        /** fim */
+        
+        /** teste encrypt retornando objeto Promise */ 
+        
+//        openpgp.generateKey({
+//            userIds: 1,
+//            curve: "ed25519",
+//            passphrase: "frase"
+//        }).then(function (key) {
+//            pubKey = key.publicKeyArmored;
+//            privKey = key.privateKeyArmored;
+//            
+//        });
+//        
+//        var encrypt = function () {
+//            var senderPrivateKeys, receiverPublicKeys;
+//            
+//            return new Promise(function (resolve) {
+//                openpgp.key.readArmored(privKey).then(function (readKeys) {
+//                    senderPrivateKeys = readKeys;
+//                    return senderPrivateKeys.keys[0].decrypt("frase");
+//                }).then(function () {
+//                    return openpgp.key.readArmored(pubKey);
+//                }).then(function (readKeys) {
+//                    receiverPublicKeys = readKeys;
+//                    return openpgp.encrypt({
+//                        armor: true,
+//                        compression: openpgp.enums.compression.zlib,
+//                        message: openpgp.message.fromText("confidencial"),
+//                        publicKeys: receiverPublicKeys.keys,
+//                        privateKeys: senderPrivateKeys.keys
+//                    });
+//                }).then(function (encrypted) {
+//                    resolve(encrypted.data);
+//                });
+//            });
+//        };
+//        
+//        encrypt().then( dados => {
+//        	console.log(dados);
+//        });
+        
+        /** fim */
+        
+        /** outro teste */
+        
+        
         var options = {
-		  userIds: [{ name: username, email: username+"@unoesc.br" }],
-		  numBits: 2048,
-		  passphrase: "chave"
-		}
-        		
-        openpgp.generateKey(options).then(key => {		
-        	privKey = key.privateKeyArmored
-			pubKey = key.publicKeyArmored
-        		  
-			console.log('Key generated')
-			
-			var message = "secret message";
-        	const encryptMessage  = async() => {
-        				
-    				var dados = {
-    						message: openpgp.message.fromText(message),
-    						publicKeys: (await openpgp.key.readArmored(pubKey)).keys
-    				};
+    		userIds: [{ name:'Jon Smith', email:'jon@example.com' }], // multiple user IDs
+    		numBits: 2048,                                            // RSA key size
+    		passphrase: 'super long and hard to guess secret'         // protects the private key
+    	};
+        
+        var privatekey;
+        var publickey;
+        
+        openpgp.generateKey(options).then(function(key) {
+        	privatekey = key.privateKeyArmored; 
+        	publickey = key.publicKeyArmored;
+        });
+        
+        var op = {
+			data: 'Hello, World!',                             // input as String (or Uint8Array)
+			publicKeys: openpgp.key.readArmored(publickey).keys,  // for encryption
+			// privateKeys: openpgp.key.readArmored(myKey.privkey).keys // for signing (optional)
+        };
 
-    				openpgp.encrypt(dados).then(ciphertext => {
-    					alert(ciphertext.data);
-
-    				})
-        			
-        		}
-        	})
-
-		
-
-        // fim de gerador de chaves
-		
-		// teste encrypt
-		
-		
-		//
-		
-		
-		
+        openpgp.encrypt(op).then(function(ciphertext) {
+    		console.log(ciphertext.data);
+        });
+        
+        /** fim */
 		
         stompClient.connect({}, onConnected, onError);
     }

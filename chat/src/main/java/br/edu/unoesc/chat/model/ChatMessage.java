@@ -1,5 +1,8 @@
 package br.edu.unoesc.chat.model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 /**
  * Created by rajeevkumarsingh on 24/07/17.
  */
@@ -7,12 +10,17 @@ public class ChatMessage {
     private MessageType type;
     private String content;
     private String sender;
-    private String chave;
+    
+    private JsonArray chavePublica;
 
     public enum MessageType {
         CHAT,
         JOIN,
         LEAVE
+    }
+    
+    public ChatMessage() {
+    	
     }
 
     public MessageType getType() {
@@ -38,4 +46,19 @@ public class ChatMessage {
     public void setSender(String sender) {
         this.sender = sender;
     }
+
+	public JsonArray getChavePublica() {
+		return chavePublica;
+	}
+
+	public void setChavePublica(JsonArray chavePublica) {
+		this.chavePublica = chavePublica;
+	}
+
+	@Override
+	public String toString() {
+		return "ChatMessage [type=" + type + ", content=" + content + ", sender=" + sender + ", chavePublica="
+				+ chavePublica + "]";
+	}
+	
 }

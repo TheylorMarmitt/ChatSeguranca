@@ -38,7 +38,9 @@ var encrypt = (chave, msgParams) => {
   }
   
 }
+
 /* Decrypt a message with a base64 encoded secretKey (privateKey) */
+
 function decrypt(secretKey, encryptedData) {  
   const receiverSecretKeyUint8Array = secretKey
   const nonce = nacl.util.decodeBase64(encryptedData.nonce)      
@@ -52,3 +54,6 @@ function decrypt(secretKey, encryptedData) {
   )
   return nacl.util.encodeUTF8(decryptedMessage)        
 }
+
+
+

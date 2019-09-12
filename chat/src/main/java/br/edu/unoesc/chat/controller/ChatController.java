@@ -156,7 +156,9 @@ public class ChatController {
 	@MessageMapping("/chat.addUserPrivado")
 	@SendTo("/topic/private")
 	public ChatMessage addUserPrivado(@Payload ChatMessage chatMessage,  SimpMessageHeaderAccessor headerAccessor) {
+		
 		System.out.println("-------DEBUG------"+chatMessage);
+		
 		if(count == 0) {
 			this.user1 = chatMessage;			
 		}
@@ -167,6 +169,10 @@ public class ChatController {
 		}
 		if(count == 2) {
 			chatMessage.setChavePublica(this.user1.getChavePublica());
+			count++;
+		}
+		if(count > 2) {
+			return null;
 		}
 		return chatMessage;
 	}

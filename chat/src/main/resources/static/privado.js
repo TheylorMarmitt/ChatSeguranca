@@ -65,8 +65,11 @@ function sendMessage(event) {
             type: 'CHAT'
         };
         
+        // if chavePub == this chave publica => fazer ajax
+        
         console.log(chatMessage);
         
+        // criptografar
         stompClient.send("/app/chat.sendMessagePrivado", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }

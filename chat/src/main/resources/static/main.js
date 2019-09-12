@@ -120,3 +120,8 @@ function getAvatarColor(messageSender) {
 
 $("#chat-container").ready(e => this.connect(e));
 messageForm.addEventListener('submit', sendMessage, true)
+
+
+
+
+

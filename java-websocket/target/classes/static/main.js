@@ -43,7 +43,7 @@ function onConnected() {
 
 
 function onError(error) {
-    connectingElement.textContent = 'Não foi possível se conectar ao websocket!';
+    connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
     connectingElement.style.color = 'red';
 }
 
@@ -72,10 +72,10 @@ function onMessageReceived(payload) {
 
     if(message.type === 'JOIN') {
         messageElement.classList.add('event-message');
-        message.content = message.sender + ' conectou-se!';
+        message.content = message.sender + ' joined!';
     } else if (message.type === 'LEAVE') {
         messageElement.classList.add('event-message');
-        message.content = message.sender + ' saiu!';
+        message.content = message.sender + ' left!';
     } else {
         messageElement.classList.add('chat-message');
 
@@ -91,17 +91,12 @@ function onMessageReceived(payload) {
         usernameElement.appendChild(usernameText);
         messageElement.appendChild(usernameElement);
     }
-    
-    $.ajax({
-		  url: 'decriptar',
-		  data: { mensagem : message.content},
-		  success: function(result) {
-			  var textElement = document.createElement('p');
-			  var messageText = document.createTextNode(result);
-			  textElement.appendChild(messageText);
-			  messageElement.appendChild(textElement);
-		  }
-	});
+
+    var textElement = document.createElement('p');
+    var messageText = document.createTextNode(message.content);
+    textElement.appendChild(messageText);
+
+    messageElement.appendChild(textElement);
 
     messageArea.appendChild(messageElement);
     messageArea.scrollTop = messageArea.scrollHeight;
@@ -120,8 +115,3 @@ function getAvatarColor(messageSender) {
 
 $("#chat-container").ready(e => this.connect(e));
 messageForm.addEventListener('submit', sendMessage, true)
-
-
-
-
-

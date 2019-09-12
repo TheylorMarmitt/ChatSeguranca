@@ -1,0 +1,19 @@
+<html  lang="pt-br" xmlns:th="https://www.thymeleaf.org">
+<head>
+<title>Chat</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="conteiner-fluid" align="center" style="margin-top:200px;">
+	<form method="get" id="form">
+	<input type="text" th:value="${nome}" name="nome" id="nome" placeholder="Digite seu nome" class="text-center"/>
+	</form>
+	<div class="row" style="margin-top: 10px;"></div>
+	<button type="submit" form="form" formaction="/geral">Chat geral</button>
+	<button type="submit" form="form" formaction="/privado">Chat privado</button>
+</div>	
+	
+</body>
+
+</html>

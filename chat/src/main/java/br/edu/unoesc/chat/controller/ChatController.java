@@ -164,9 +164,9 @@ public class ChatController {
 			headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
 			this.user2 = chatMessage;
 			count++;
-		}else if(count == 2) {
+		}
+		if(count == 2) {
 			chatMessage.setChavePublica(this.user1.getChavePublica());
-			headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
 		}
 		return chatMessage;
 	}

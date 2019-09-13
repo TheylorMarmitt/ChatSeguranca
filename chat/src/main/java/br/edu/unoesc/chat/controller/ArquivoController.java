@@ -2,62 +2,46 @@ package br.edu.unoesc.chat.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
+@Controller
 public class ArquivoController {
 
 	@PostMapping(value = "/arquivo")
 	@ResponseStatus(value = HttpStatus.OK)
-	public void salvar(@RequestParam("file") MultipartFile filePriv, MultipartFile filePub, String frase) throws IOException {
+	public String salvar(@RequestParam("filePriv") MultipartFile filePriv, 
+			@RequestParam("filePub") MultipartFile filePub, String frase) throws IOException {
 
 		String path = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "certificado";
 		
 		// arquivo private
-		File novoArquivo = new File(path + File.separator + "private_key.asc");
-
-		boolean criado;
-
-		byte[] bs = filePriv.getBytes();
-		try {
-			criado = novoArquivo.createNewFile();
-			FileUtils.writeByteArrayToFile(novoArquivo, bs);
-			System.out.println("arquivo criado ========= " + criado);
-		} catch (IOException erro) {
-			System.out.println("erro ======== " + erro);
+		Path caminhoPrivada = Paths.get(path+"/private_key.asc");
+		if (!Files.exists(caminhoPrivada)) {
+			Files.write(caminhoPrivada, filePriv.getBytes(), StandardOpenOption.CREATE_NEW);
 		}
 		
-		
-		// arquivo public
-		File pubKey = new File(path + File.separator + "public_key.asc");
-
-		boolean criadoPub;
-		byte[] bsPub = filePub.getBytes();
-		try {
-			criadoPub = pubKey.createNewFile();
-			FileUtils.writeByteArrayToFile(pubKey, bsPub);
-			System.out.println("arquivo criado ========= " + criadoPub);
-		} catch (IOException erro) {
-			System.out.println("erro ======== " + erro);
+		// arquivo private		
+		Path caminhoPublica = Paths.get(path+"/public_key.asc");
+		if (!Files.exists(caminhoPublica)) {
+			Files.write(caminhoPublica, filePub.getBytes(), StandardOpenOption.CREATE_NEW);
 		}
-		
 		// frase
-		File fileFrase = new File(path + File.separator + "frase_seguranca.txt");
-
-		boolean criar;
-		byte[] bite = frase.getBytes();
-		try {
-			criar = fileFrase.createNewFile();
-			FileUtils.writeByteArrayToFile(fileFrase, bite);
-			System.out.println("arquivo criado ========= " + criar);
-		} catch (IOException erro) {
-			System.out.println("erro ======== " + erro);
+		Path caminho = Paths.get(path+"/frase_seguranca.txt");
+		if (!Files.exists(caminho)) {
+			Files.write(caminho, frase.getBytes(), StandardOpenOption.CREATE_NEW);
 		}
-
+		
+		return "index";
+		
 	}
 }

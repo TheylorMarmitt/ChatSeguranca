@@ -64,14 +64,16 @@ public class ChatController {
 
 	@PostMapping(value = "/arquivo")
 	@ResponseStatus(value = HttpStatus.OK)
-	public void salvar(@RequestParam("file") MultipartFile file, String frase) throws IOException {
+	public void salvar(@RequestParam("file") MultipartFile filePriv, MultipartFile filePub, String frase) throws IOException {
 
 		String path = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "certificado";
-		File novoArquivo = new File(path + File.separator + file.getOriginalFilename());
+		
+		// arquivo private
+		File novoArquivo = new File(path + File.separator + "private_key.asc");
 
 		boolean criado;
 
-		byte[] bs = file.getBytes();
+		byte[] bs = filePriv.getBytes();
 		try {
 			criado = novoArquivo.createNewFile();
 			FileUtils.writeByteArrayToFile(novoArquivo, bs);
@@ -79,11 +81,25 @@ public class ChatController {
 		} catch (IOException erro) {
 			System.out.println("erro ======== " + erro);
 		}
+		
+		
+		// arquivo public
+		File pubKey = new File(path + File.separator + "public_key.asc");
 
-		File fileFrase = new File(path + File.separator + "frase.txt");
+		boolean criadoPub;
+		byte[] bsPub = filePub.getBytes();
+		try {
+			criadoPub = pubKey.createNewFile();
+			FileUtils.writeByteArrayToFile(pubKey, bsPub);
+			System.out.println("arquivo criado ========= " + criadoPub);
+		} catch (IOException erro) {
+			System.out.println("erro ======== " + erro);
+		}
+		
+		// frase
+		File fileFrase = new File(path + File.separator + "frase_seguranca.txt");
 
 		boolean criar;
-
 		byte[] bite = frase.getBytes();
 		try {
 			criar = fileFrase.createNewFile();
@@ -144,13 +160,7 @@ public class ChatController {
 		return chatMessage;
 	}
 	
-	//ajax pegando chave user 2
-	@RequestMapping(path = "/buscarChaveUser2")
-	public @ResponseBody Byte buscarChave() {
-		return this.user2.getChavePublica();
-	}
-	
-	// arquivo PUBLIC KEY
+	//  PUBLIC KEY
 	@RequestMapping(path = "/buscarPubKey")
 	public @ResponseBody String publicKey() throws IOException {
 		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
@@ -159,7 +169,7 @@ public class ChatController {
 		return dados;
 	}
 	
-	// arquivo PRIVATE KEY
+	//  PRIVATE KEY
 	@RequestMapping(path = "/buscarPrivKey")
 	public @ResponseBody String privateKey() throws IOException {
 		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
@@ -168,31 +178,28 @@ public class ChatController {
 		return dados;
 	}
 	
+//  PRIVATE KEY
+	@RequestMapping(path = "/fraseSeguranca")
+	public @ResponseBody String frase() throws IOException {
+		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
+		File frase = new File(path + File.separator + "frase_seguranca.txt");
+		String dados = new String(Files.readAllBytes(frase.toPath()));
+		return dados;
+	}
+	
 	private int count = 0;
-	private ChatMessage user1 = new ChatMessage();
-	private ChatMessage user2 = new ChatMessage();
 
 	@MessageMapping("/chat.addUserPrivado")
 	@SendTo("/topic/private")
 	public ChatMessage addUserPrivado(@Payload ChatMessage chatMessage,  SimpMessageHeaderAccessor headerAccessor) {
 		
-		System.out.println("-------DEBUG------"+chatMessage);
-		
-		if(count == 0) {
-			this.user1 = chatMessage;			
-		}
 		if(count < 2) {
 			headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-			this.user2 = chatMessage;
 			count++;
-		}
-		if(count == 2) {
-			chatMessage.setChavePublica(this.user1.getChavePublica());
-			count++;
-		}
-		if(count > 2) {
+		}else {
 			return null;
 		}
+		
 		return chatMessage;
 	}
 

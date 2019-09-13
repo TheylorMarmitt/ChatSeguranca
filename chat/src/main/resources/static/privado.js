@@ -18,13 +18,17 @@ const chave = nacl.box.keyPair();
 // const crypt = encrypt(chave.publicKey, "ola mundo crypto");
 // const resultado = decrypt(chave.secretKey, crypt);
 
+var alicePub = ""
+var alicePriv = ""
+var frase = ""	
+	
+
 function connect(event) {
     username = $('#nome').val().trim();
 
     if(username) {
 
     	///
-    	
     	$.ajax({
   		  url: 'buscarPubKey',
   		  success: function(result) {
@@ -35,41 +39,40 @@ function connect(event) {
 	    	  armored: alice_pgp_key
 	    	}, function(err, alice) {
 	    	  if (!err) {
-	    	    console.log(alice.armored_pgp_public);
+	    		  alicePub = alice;
+	    		  console.log(alice.armored_pgp_public);
 	    	  }else{
 	    		  console.log("erro em import"+ err);
 	    	  }
-	    	  
-	    	  // criptografar
-	    	  var params = {
-				  msg: "Chuck chucky, bo-bucky!",
-				  encrypt_for: alice
-				};
-	
-				kbpgp.box(params, function(err, result_string, result_buffer) {
-				  console.log(result_string); // mensagem criptografada
-				});
 	    	  
 	    	});
 
   		  }
     	});
     	
+    	$.ajax({
+    		  url: 'fraseSeguranca',
+    		  success: function(result) {
+    			frase = result
+    		  }
+      	});
+    	
     	
     	$.ajax({
 		  url: 'buscarPrivKey',
 		  success: function(result) {
 
-		  var alice_pgp_key    = result;
-	    	var alice_passphrase = "frase_seguranca";
+			  var alice_pgp_key    = result;
+			  var alice_passphrase = frase;
 
 	    	kbpgp.KeyManager.import_from_armored_pgp({
 	    	  armored: alice_pgp_key
 	    	}, function(err, alice) {
+	    		alicePriv = alice
 	    	  if (!err) {
 	    	    if (alice.is_pgp_locked()) {
 	    	      alice.unlock_pgp({
-	    	        passphrase: alice_passphrase
+	    	    	  passphrase: alice_passphrase
 	    	      }, function(err) {
 	    	        if (!err) {
 	    	          console.log("Loaded private key with passphrase");
@@ -84,11 +87,6 @@ function connect(event) {
 		  }
       	});
     	
-    	
-    	
-    	
-    	///
-
         var socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
         												
@@ -122,24 +120,31 @@ function onError(error) {
 
 
 function sendMessage(event) {
+	
     var messageContent = messageInput.value.trim();
-
-    if(messageContent && stompClient) {
-        var chatMessage = {
-            sender: username,
-            content: messageInput.value,
-            chave: pubKey,
-            type: 'CHAT'
-        };
-        
-        // if chavePub == this chave publica => fazer ajax
-        
-        console.log(chatMessage);
-        
-        // criptografar
-        stompClient.send("/app/chat.sendMessagePrivado", {}, JSON.stringify(chatMessage));
-        messageInput.value = '';
-    }
+    
+    // criptografar
+    var params = {
+  		  msg: messageInput.value,
+  		  encrypt_for: alicePub,
+  		};
+  	
+	kbpgp.box(params, function(err, result_string, result_buffer) {
+		
+		if(messageContent && stompClient) {
+	        var chatMessage = {
+	            sender: username,
+	            content: result_string,
+	            type: 'CHAT'
+	        };
+	        
+	        stompClient.send("/app/chat.sendMessagePrivado", {}, JSON.stringify(chatMessage));
+	        messageInput.value = '';
+	    }
+		
+	});
+	// fim
+	
     event.preventDefault();
 }
 
@@ -173,10 +178,42 @@ function onMessageReceived(payload) {
     }
 
     var textElement = document.createElement('p');
+    
     // descriptar
-    var messageText = document.createTextNode(message.content);
-    textElement.appendChild(messageText);
-
+    var ring = new kbpgp.keyring.KeyRing;
+    var kms = [ alicePriv ];
+    var pgp_msg = message.content
+    
+    for (var i in kms) {
+      ring.add_key_manager(kms[i]);
+    }
+    
+    kbpgp.unbox({keyfetch: ring, armored: pgp_msg }, function(err, literals) {
+      if (err != null) {
+        return console.log("Problem: " + err);
+      } else {
+        console.log("decrypted message");
+        console.log(literals[0].toString());
+        
+      //  problemas com a assinatura  
+        
+//        var ds = km = null;
+//        ds = literals[0].get_data_signer();
+//        if (ds) { km = ds.get_key_manager(); }
+//        if (km) {
+//          console.log("Signed by PGP fingerprint");
+//          console.log(km.get_pgp_fingerprint().toString('hex'));
+//        }
+        
+      }
+      
+      // mensagem 
+      var messageText = document.createTextNode(literals[0].toString());
+      textElement.appendChild(messageText);
+      
+    });
+	// fim
+    
     messageElement.appendChild(textElement);
 
     messageArea.appendChild(messageElement);

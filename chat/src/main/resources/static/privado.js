@@ -14,7 +14,7 @@ var colors = [
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
-const chave = nacl.box.keyPair();
+//const chave = nacl.box.keyPair();
 // const crypt = encrypt(chave.publicKey, "ola mundo crypto");
 // const resultado = decrypt(chave.secretKey, crypt);
 

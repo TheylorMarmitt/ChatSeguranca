@@ -64,15 +64,21 @@ public class ChatController {
 
 	
 
-	/** -------------------- MENSAGENS -------------------- */
+	/** -------------------- MENSAGENS -------------------- */ 
 	//----------------------- PUBLIC ----------------------	
 
+	private String frase() throws IOException {
+		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
+		File frase = new File(path + File.separator + "frase_seguranca.txt");
+		return new String(Files.readAllBytes(frase.toPath()));
+	}
+	
 	@MessageMapping("/chat.sendMessage")
 	@SendTo("/topic/public")
 	public ChatMessage sendMessage(@Payload br.edu.unoesc.chat.model.ChatMessage chatMessage) {
 
 		try {
-			String encriptado = simetrico.encrypt(chatMessage.getContent(), "senha");
+			String encriptado = simetrico.encrypt(chatMessage.getContent(), frase());
 			chatMessage.setContent(encriptado);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,7 +92,7 @@ public class ChatController {
 	public @ResponseBody String decriptar(String mensagem) {
 		String msgResult = "";
 		try {
-			msgResult = simetrico.decrypt(mensagem, "senha");
+			msgResult = simetrico.decrypt(mensagem, frase());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

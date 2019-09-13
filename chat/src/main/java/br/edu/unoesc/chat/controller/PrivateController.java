@@ -52,10 +52,27 @@ public class PrivateController {
 		return dados;
 	}
 	
+	// quantidade de usuarios no privado
 	@RequestMapping(path = "/userPrivado")
 	public @ResponseBody Integer quantidade() {
 		return this.count;
 	}
+	
+	/** CASO PRECISE TROCAR DE CHAVE
+	 *	chama json em js 
+	 */
+	@RequestMapping(path = "/chaveUser1")
+	public @ResponseBody String user1() {
+		return this.chaveUser1;
+	}
+	@RequestMapping(path = "/chaveUser2")
+	public @ResponseBody String user2() {
+		return this.chaveUser2;
+	}
+	
+	// users para salvar chaves 
+	private String chaveUser1 = "";
+	private String chaveUser2 = "";
 	
 	private int count = 0;
 
@@ -63,6 +80,13 @@ public class PrivateController {
 	@SendTo("/topic/private")
 	public ChatMessage addUserPrivado(@Payload ChatMessage chatMessage,  SimpMessageHeaderAccessor headerAccessor) {
 		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+		System.out.println("count = "+count);
+		if(count == 0) {
+			chaveUser1 = chatMessage.getChavePublica();
+		}else {
+			chaveUser2 = chatMessage.getChavePublica();
+		}
+		this.count++;
 		return chatMessage;
 	}
 

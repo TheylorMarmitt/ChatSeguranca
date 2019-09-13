@@ -8,7 +8,7 @@ public class ChatMessage {
     private String content;
     private String sender;
     
-    private Byte chavePublica;
+    private String chavePublica;
 
     public enum MessageType {
         CHAT,
@@ -44,11 +44,11 @@ public class ChatMessage {
         this.sender = sender;
     }
 
-	public Byte getChavePublica() {
+	public String getChavePublica() {
 		return chavePublica;
 	}
 
-	public void setChavePublica(Byte chavePublica) {
+	public void setChavePublica(String chavePublica) {
 		this.chavePublica = chavePublica;
 	}
 

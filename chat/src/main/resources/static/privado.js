@@ -95,7 +95,6 @@ function connect(event) {
     				  var socket = new SockJS('/ws');
     				  stompClient = Stomp.over(socket);
     				  stompClient.connect({}, onConnected, onError);   
-    				  
     			  }else{
     				  connectingElement.textContent = 'Não foi possível se conectar ao websocket!';
     				  connectingElement.style.color = 'red';
@@ -115,8 +114,7 @@ function onConnected() {
     // Tell your username to the server
     stompClient.send("/app/chat.addUserPrivado",
         {},
-        JSON.stringify({sender: username, type: 'JOIN'})
-        	//, chavePublica: chave.publicKey})        	
+        JSON.stringify({sender: username, type: 'JOIN', chavePublica: alicePub.armored_pgp_public})        	
     )
 
     connectingElement.classList.add('hidden');
@@ -133,10 +131,28 @@ function sendMessage(event) {
 	
     var messageContent = messageInput.value.trim();
     
-    // criptografar
+    /** TROCANDO DE CHAVE EM POSSIVEL ERRO FUTURO EM USERS EM PCs DIFERENTES*/
+//    $.ajax({
+//		  url: 'chaveUser1',
+//		  success: function(chave1) {
+//			  if(alicePub.armored_pgp_public === chave1){
+//				  $.ajax({
+//					  url: 'chaveUser2',
+//					  success: function(chave2){
+//						  alicePub.armored_pgp_public = chave2
+//					  }
+//				  });
+//			  }else{
+//				  alicePub.armored_pgp_public = chave1
+//			  }
+//		  }
+//    });
+    
+    // criptografando e assinando
     var params = {
   		  msg: messageInput.value,
   		  encrypt_for: alicePub,
+  		  sign_with:   alicePriv
   		};
   	
 	kbpgp.box(params, function(err, result_string, result_buffer) {
@@ -205,13 +221,12 @@ function onMessageReceived(payload) {
         console.log("decrypted message");
         console.log(literals[0].toString());
         
-      //  problemas com a assinatura  
+      //  problemas com variavel km => verificando fingerprint   
         
 //        var ds = km = null;
 //        ds = literals[0].get_data_signer();
 //        if (ds) { km = ds.get_key_manager(); }
 //        if (km) {
-//          console.log("Signed by PGP fingerprint");
 //          console.log(km.get_pgp_fingerprint().toString('hex'));
 //        }
         

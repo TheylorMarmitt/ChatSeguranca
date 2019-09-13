@@ -62,58 +62,10 @@ public class ChatController {
 		return "chat/conectar";
 	}
 
-	@PostMapping(value = "/arquivo")
-	@ResponseStatus(value = HttpStatus.OK)
-	public void salvar(@RequestParam("file") MultipartFile filePriv, MultipartFile filePub, String frase) throws IOException {
-
-		String path = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "certificado";
-		
-		// arquivo private
-		File novoArquivo = new File(path + File.separator + "private_key.asc");
-
-		boolean criado;
-
-		byte[] bs = filePriv.getBytes();
-		try {
-			criado = novoArquivo.createNewFile();
-			FileUtils.writeByteArrayToFile(novoArquivo, bs);
-			System.out.println("arquivo criado ========= " + criado);
-		} catch (IOException erro) {
-			System.out.println("erro ======== " + erro);
-		}
-		
-		
-		// arquivo public
-		File pubKey = new File(path + File.separator + "public_key.asc");
-
-		boolean criadoPub;
-		byte[] bsPub = filePub.getBytes();
-		try {
-			criadoPub = pubKey.createNewFile();
-			FileUtils.writeByteArrayToFile(pubKey, bsPub);
-			System.out.println("arquivo criado ========= " + criadoPub);
-		} catch (IOException erro) {
-			System.out.println("erro ======== " + erro);
-		}
-		
-		// frase
-		File fileFrase = new File(path + File.separator + "frase_seguranca.txt");
-
-		boolean criar;
-		byte[] bite = frase.getBytes();
-		try {
-			criar = fileFrase.createNewFile();
-			FileUtils.writeByteArrayToFile(fileFrase, bite);
-			System.out.println("arquivo criado ========= " + criar);
-		} catch (IOException erro) {
-			System.out.println("erro ======== " + erro);
-		}
-
-	}
+	
 
 	/** -------------------- MENSAGENS -------------------- */
-
-//	------------------------- PUBLIC --------------------	
+	//----------------------- PUBLIC ----------------------	
 
 	@MessageMapping("/chat.sendMessage")
 	@SendTo("/topic/public")
@@ -152,55 +104,5 @@ public class ChatController {
 		return chatMessage;
 	}
 
-//	------------------------- PRIVATE --------------------
-
-	@MessageMapping("/chat.sendMessagePrivado")
-	@SendTo("/topic/private")
-	public ChatMessage sendMessagePrivado(@Payload br.edu.unoesc.chat.model.ChatMessage chatMessage) {
-		return chatMessage;
-	}
 	
-	//  PUBLIC KEY
-	@RequestMapping(path = "/buscarPubKey")
-	public @ResponseBody String publicKey() throws IOException {
-		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
-		File certificado = new File(path + File.separator + "public_key.asc");
-		String dados = new String(Files.readAllBytes(certificado.toPath()));
-		return dados;
-	}
-	
-	//  PRIVATE KEY
-	@RequestMapping(path = "/buscarPrivKey")
-	public @ResponseBody String privateKey() throws IOException {
-		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
-		File certificado = new File(path + File.separator + "private_key.asc");
-		String dados = new String(Files.readAllBytes(certificado.toPath()));
-		return dados;
-	}
-	
-//  PRIVATE KEY
-	@RequestMapping(path = "/fraseSeguranca")
-	public @ResponseBody String frase() throws IOException {
-		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
-		File frase = new File(path + File.separator + "frase_seguranca.txt");
-		String dados = new String(Files.readAllBytes(frase.toPath()));
-		return dados;
-	}
-	
-	private int count = 0;
-
-	@MessageMapping("/chat.addUserPrivado")
-	@SendTo("/topic/private")
-	public ChatMessage addUserPrivado(@Payload ChatMessage chatMessage,  SimpMessageHeaderAccessor headerAccessor) {
-		
-		if(count < 2) {
-			headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-			count++;
-		}else {
-			return null;
-		}
-		
-		return chatMessage;
-	}
-
 }

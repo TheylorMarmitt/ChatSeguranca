@@ -26,6 +26,7 @@ var frase = ""
 function connect(event) {
     username = $('#nome').val().trim();
 
+    
     if(username) {
 
     	///
@@ -51,52 +52,61 @@ function connect(event) {
     	});
     	
     	$.ajax({
-    		  url: 'fraseSeguranca',
-    		  success: function(result) {
-    			frase = result
-    		  }
-      	});
+  		  url: 'fraseSeguranca',
+  		  success: function(frase) {
+  			
+  			$.ajax({
+  			  url: 'buscarPrivKey',
+  			  success: function(result) {
+
+  				  var alice_pgp_key    = result;
+  				  var alice_passphrase = frase;
+
+  		    	kbpgp.KeyManager.import_from_armored_pgp({
+  		    	  armored: alice_pgp_key
+  		    	}, function(err, alice) {
+  		    		alicePriv = alice
+  		    	  if (!err) {
+  		    	    if (alice.is_pgp_locked()) {
+  		    	      alice.unlock_pgp({
+  		    	    	  passphrase: alice_passphrase
+  		    	      }, function(err) {
+  		    	        if (!err) {
+  		    	          console.log("Loaded private key with passphrase");
+  		    	        }
+  		    	      });
+  		    	    } else {
+  		    	      console.log("Loaded private key w/o passphrase");
+  		    	    }
+  		    	  }
+  		    	});
+
+  			  }
+  	      	});
+  			  
+  		  }
+    	});
     	
     	
     	$.ajax({
-		  url: 'buscarPrivKey',
-		  success: function(result) {
-
-			  var alice_pgp_key    = result;
-			  var alice_passphrase = frase;
-
-	    	kbpgp.KeyManager.import_from_armored_pgp({
-	    	  armored: alice_pgp_key
-	    	}, function(err, alice) {
-	    		alicePriv = alice
-	    	  if (!err) {
-	    	    if (alice.is_pgp_locked()) {
-	    	      alice.unlock_pgp({
-	    	    	  passphrase: alice_passphrase
-	    	      }, function(err) {
-	    	        if (!err) {
-	    	          console.log("Loaded private key with passphrase");
-	    	        }
-	    	      });
-	    	    } else {
-	    	      console.log("Loaded private key w/o passphrase");
-	    	    }
-	    	  }
-	    	});
-
-		  }
-      	});
-    	
-        var socket = new SockJS('/ws');
-        stompClient = Stomp.over(socket);
-        												
-        stompClient.connect({}, onConnected, onError);
+    		  url: 'userPrivado',
+    		  success: function(result) {
+    			  if(result < 2){
+    				  var socket = new SockJS('/ws');
+    				  stompClient = Stomp.over(socket);
+    				  stompClient.connect({}, onConnected, onError);   
+    				  
+    			  }else{
+    				  connectingElement.textContent = 'Não foi possível se conectar ao websocket!';
+    				  connectingElement.style.color = 'red';
+    			  }
+    		  }
+    	});
     }
     
     event.preventDefault();
     
 }
-
 
 function onConnected() {
     // Subscribe to the Private Topic

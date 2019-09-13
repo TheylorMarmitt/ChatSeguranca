@@ -2,6 +2,7 @@ package br.edu.unoesc.chat.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,8 +146,26 @@ public class ChatController {
 	
 	//ajax pegando chave user 2
 	@RequestMapping(path = "/buscarChaveUser2")
-	public @ResponseBody JsonArray buscarChave() {
+	public @ResponseBody Byte buscarChave() {
 		return this.user2.getChavePublica();
+	}
+	
+	// arquivo PUBLIC KEY
+	@RequestMapping(path = "/buscarPubKey")
+	public @ResponseBody String publicKey() throws IOException {
+		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
+		File certificado = new File(path + File.separator + "public_key.asc");
+		String dados = new String(Files.readAllBytes(certificado.toPath()));
+		return dados;
+	}
+	
+	// arquivo PRIVATE KEY
+	@RequestMapping(path = "/buscarPrivKey")
+	public @ResponseBody String privateKey() throws IOException {
+		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
+		File certificado = new File(path + File.separator + "private_key.asc");
+		String dados = new String(Files.readAllBytes(certificado.toPath()));
+		return dados;
 	}
 	
 	private int count = 0;

@@ -15,13 +15,79 @@ var colors = [
 ];
 
 const chave = nacl.box.keyPair();
-//const crypt = encrypt(chave.publicKey, "ola mundo crypto");
-//const resultado = decrypt(chave.secretKey, crypt);
+// const crypt = encrypt(chave.publicKey, "ola mundo crypto");
+// const resultado = decrypt(chave.secretKey, crypt);
 
 function connect(event) {
     username = $('#nome').val().trim();
 
     if(username) {
+
+    	///
+    	
+    	$.ajax({
+  		  url: 'buscarPubKey',
+  		  success: function(result) {
+
+  			var alice_pgp_key = result
+  			
+	    	kbpgp.KeyManager.import_from_armored_pgp({
+	    	  armored: alice_pgp_key
+	    	}, function(err, alice) {
+	    	  if (!err) {
+	    	    console.log(alice.armored_pgp_public);
+	    	  }else{
+	    		  console.log("erro em import"+ err);
+	    	  }
+	    	  
+	    	  // criptografar
+	    	  var params = {
+				  msg: "Chuck chucky, bo-bucky!",
+				  encrypt_for: alice
+				};
+	
+				kbpgp.box(params, function(err, result_string, result_buffer) {
+				  console.log(result_string); // mensagem criptografada
+				});
+	    	  
+	    	});
+
+  		  }
+    	});
+    	
+    	
+    	$.ajax({
+		  url: 'buscarPrivKey',
+		  success: function(result) {
+
+		  var alice_pgp_key    = result;
+	    	var alice_passphrase = "frase_seguranca";
+
+	    	kbpgp.KeyManager.import_from_armored_pgp({
+	    	  armored: alice_pgp_key
+	    	}, function(err, alice) {
+	    	  if (!err) {
+	    	    if (alice.is_pgp_locked()) {
+	    	      alice.unlock_pgp({
+	    	        passphrase: alice_passphrase
+	    	      }, function(err) {
+	    	        if (!err) {
+	    	          console.log("Loaded private key with passphrase");
+	    	        }
+	    	      });
+	    	    } else {
+	    	      console.log("Loaded private key w/o passphrase");
+	    	    }
+	    	  }
+	    	});
+
+		  }
+      	});
+    	
+    	
+    	
+    	
+    	///
 
         var socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
@@ -41,7 +107,8 @@ function onConnected() {
     // Tell your username to the server
     stompClient.send("/app/chat.addUserPrivado",
         {},
-        JSON.stringify({sender: username, type: 'JOIN', chavePublica: chave.publicKey})
+        JSON.stringify({sender: username, type: 'JOIN'})
+        	//, chavePublica: chave.publicKey})        	
     )
 
     connectingElement.classList.add('hidden');
@@ -106,7 +173,7 @@ function onMessageReceived(payload) {
     }
 
     var textElement = document.createElement('p');
-    //descriptar
+    // descriptar
     var messageText = document.createTextNode(message.content);
     textElement.appendChild(messageText);
 

@@ -13,8 +13,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Simetrico {
 
-	private static String secretKey = "12345678";
-	private static String salt = "12345678";
+//	private static String secretKey = "12345678";
+//	private static String salt = "12345678";
 	
 	public String encrypt(String strToEncrypt, String secret) {
 		Security.setProperty("crypto.policy", "unlimited");
@@ -23,7 +23,7 @@ public class Simetrico {
 			IvParameterSpec ivspec = new IvParameterSpec(iv);
 
 			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-			KeySpec spec = new PBEKeySpec(secretKey.toCharArray(), salt.getBytes(), 65536, 256);
+			KeySpec spec = new PBEKeySpec(secret.toCharArray(), secret.getBytes(), 65536, 256);
 			SecretKey tmp = factory.generateSecret(spec);
 			SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
 
@@ -44,7 +44,7 @@ public class Simetrico {
 	        IvParameterSpec ivspec = new IvParameterSpec(iv);
 	         
 	        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-	        KeySpec spec = new PBEKeySpec(secretKey.toCharArray(), salt.getBytes(), 65536, 256);
+	        KeySpec spec = new PBEKeySpec(secret.toCharArray(), secret.getBytes(), 65536, 256);
 	        SecretKey tmp = factory.generateSecret(spec);
 	        SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
 	         

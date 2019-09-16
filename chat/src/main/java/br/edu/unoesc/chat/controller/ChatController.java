@@ -79,6 +79,7 @@ public class ChatController {
 
 		try {
 			String encriptado = simetrico.encrypt(chatMessage.getContent(), frase());
+			System.out.println(encriptado);
 			chatMessage.setContent(encriptado);
 		} catch (Exception e) {
 			e.printStackTrace();

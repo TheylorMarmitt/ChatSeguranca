@@ -80,14 +80,13 @@ public class PrivateController {
 	// users para salvar chaves 
 	private String chaveUser1 = "";
 	private String chaveUser2 = "";
-	
+	// contador de usuarios
 	private int count = 0;
 
 	@MessageMapping("/chat.addUserPrivado")
 	@SendTo("/topic/private")
 	public ChatMessage addUserPrivado(@Payload ChatMessage chatMessage,  SimpMessageHeaderAccessor headerAccessor) {
 		headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-		System.out.println("count = "+count);
 		if(count == 0) {
 			chaveUser1 = chatMessage.getChavePublica();
 		}else {

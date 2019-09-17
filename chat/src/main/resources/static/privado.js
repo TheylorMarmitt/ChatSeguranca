@@ -136,31 +136,32 @@ function sendMessage(event) {
 		  url: 'chaveUser',
 		  success: function(chave1) {
 			 alicePub.armored_pgp_public = chave1
+			 
+			 // criptografando e assinando
+			 var params = {
+					 msg: messageInput.value,
+					 encrypt_for: alicePub,
+					 sign_with:   alicePriv
+			 }
+			 kbpgp.box(params, function(err, result_string, result_buffer) {
+				 
+				 if(messageContent && stompClient) {
+					 var chatMessage = {
+							 sender: username,
+							 content: result_string,
+							 type: 'CHAT'
+					 };
+					 
+					 stompClient.send("/app/chat.sendMessagePrivado", {}, JSON.stringify(chatMessage));
+					 messageInput.value = '';
+				 }
+				 
+			 });
+			 // fim
 			}
     });
     
-    // criptografando e assinando
-    var params = {
-  		  msg: messageInput.value,
-  		  encrypt_for: alicePub,
-  		  sign_with:   alicePriv
-  		};
   	
-	kbpgp.box(params, function(err, result_string, result_buffer) {
-		
-		if(messageContent && stompClient) {
-	        var chatMessage = {
-	            sender: username,
-	            content: result_string,
-	            type: 'CHAT'
-	        };
-	        
-	        stompClient.send("/app/chat.sendMessagePrivado", {}, JSON.stringify(chatMessage));
-	        messageInput.value = '';
-	    }
-		
-	});
-	// fim
 	
     event.preventDefault();
 }
@@ -210,16 +211,15 @@ function onMessageReceived(payload) {
         return console.log("Problem: " + err);
       } else {
         console.log("decrypted message");
-        console.log(literals[0].toString());
         
-      //  problemas com variavel km => verificando fingerprint   
-        
-//        var ds = km = null;
-//        ds = literals[0].get_data_signer();
-//        if (ds) { km = ds.get_key_manager(); }
-//        if (km) {
-//          console.log(km.get_pgp_fingerprint().toString('hex'));
-//        }
+      //  verificando fingerprint   
+        var km = null;
+        var ds = km;
+        ds = literals[0].get_data_signer();
+        if (ds) { km = ds.get_key_manager(); }
+        if (km) {
+          console.log(km.get_pgp_fingerprint().toString('hex'));
+        }
         
       }
       

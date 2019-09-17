@@ -133,19 +133,10 @@ function sendMessage(event) {
     
     /** TROCANDO DE CHAVE EM POSSIVEL ERRO FUTURO EM USERS EM PCs DIFERENTES*/
 //    $.ajax({
-//		  url: 'chaveUser1',
+//		  url: 'chaveUser',
 //		  success: function(chave1) {
-//			  if(alicePub.armored_pgp_public === chave1){
-//				  $.ajax({
-//					  url: 'chaveUser2',
-//					  success: function(chave2){
-//						  alicePub.armored_pgp_public = chave2
-//					  }
-//				  });
-//			  }else{
-//				  alicePub.armored_pgp_public = chave1
-//			  }
-//		  }
+//			 alicePub.armored_pgp_public = chave1
+//			}
 //    });
     
     // criptografando e assinando

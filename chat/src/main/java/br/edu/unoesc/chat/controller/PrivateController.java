@@ -58,16 +58,23 @@ public class PrivateController {
 		return this.count;
 	}
 	
+	
 	/** CASO PRECISE TROCAR DE CHAVE
 	 *	chama json em js 
+	 *
+	 *	compara com a chave e fica com a diferente.
+	 * @throws IOException 
 	 */
-	@RequestMapping(path = "/chaveUser1")
-	public @ResponseBody String user1() {
+	@RequestMapping(path = "/chaveUser")
+	public @ResponseBody String user1() throws IOException {
+		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
+		File certificado = new File(path + File.separator + "private_key.asc");
+		String dados = new String(Files.readAllBytes(certificado.toPath()));
+		if(dados.contentEquals(chaveUser1)) {
+			return this.chaveUser2;
+		}
 		return this.chaveUser1;
-	}
-	@RequestMapping(path = "/chaveUser2")
-	public @ResponseBody String user2() {
-		return this.chaveUser2;
+			
 	}
 	
 	// users para salvar chaves 

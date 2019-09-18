@@ -7,16 +7,17 @@ var messageArea = document.querySelector('#messageArea');
 var connectingElement = document.querySelector('.connecting');
 
 var stompClient = null;
+
 var username = null;
+var frase = null;
+var privada = null;
+var publica = null;
 
 var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
-//const chave = nacl.box.keyPair();
-// const crypt = encrypt(chave.publicKey, "ola mundo crypto");
-// const resultado = decrypt(chave.secretKey, crypt);
 
 var alicePub = ""
 var alicePriv = ""
@@ -24,69 +25,42 @@ var frase = ""
 	
 
 function connect(event) {
+	
     username = $('#nome').val().trim();
-
-    
+    frase = $('#frase').val().trim();
+    privada = $('#privada').val().trim();
+    publica = $('#publica').val().trim();
+        
     if(username) {
-
-    	///
-    	$.ajax({
-  		  url: 'buscarPubKey',
-  		  success: function(result) {
-
-  			var alice_pgp_key = result
-  			
-	    	kbpgp.KeyManager.import_from_armored_pgp({
-	    	  armored: alice_pgp_key
-	    	}, function(err, alice) {
-	    	  if (!err) {
-	    		  alicePub = alice;
-	    		  console.log(alice.armored_pgp_public);
-	    	  }else{
-	    		  console.log("erro em import"+ err);
-	    	  }
-	    	  
-	    	});
-
-  		  }
-    	});
     	
-    	$.ajax({
-  		  url: 'fraseSeguranca',
-  		  success: function(frase) {
-  			
-  			$.ajax({
-  			  url: 'buscarPrivKey',
-  			  success: function(result) {
-
-  				  var alice_pgp_key    = result;
-  				  var alice_passphrase = frase;
-
-  		    	kbpgp.KeyManager.import_from_armored_pgp({
-  		    	  armored: alice_pgp_key
-  		    	}, function(err, alice) {
-  		    		alicePriv = alice
-  		    	  if (!err) {
-  		    	    if (alice.is_pgp_locked()) {
-  		    	      alice.unlock_pgp({
-  		    	    	  passphrase: alice_passphrase
-  		    	      }, function(err) {
-  		    	        if (!err) {
-  		    	          console.log("Loaded private key with passphrase");
-  		    	        }
-  		    	      });
-  		    	    } else {
-  		    	      console.log("Loaded private key w/o passphrase");
-  		    	    }
-  		    	  }
-  		    	});
-
-  			  }
-  	      	});
-  			  
-  		  }
-    	});
+    	kbpgp.KeyManager.import_from_armored_pgp({
+    		  armored: publica
+    		}, function(err, alice) {
+    			alicePub = alice
+    		  if (!err) {
+    		    console.log("alice is loaded");
+    		  }
+    		});
     	
+
+		kbpgp.KeyManager.import_from_armored_pgp({
+		  armored: privada
+		}, function(err, alice) {
+			alicePriv = alice
+		  if (!err) {
+		    if (alice.is_pgp_locked()) {
+		      alice.unlock_pgp({
+		    	  passphrase: frase
+		      }, function(err) {
+		        if (!err) {
+		          console.log("Loaded private key with passphrase");
+		        }
+		      });
+		    } else {
+		      console.log("Loaded private key w/o passphrase");
+		    }
+		  }
+		});
     	
     	$.ajax({
     		  url: 'userPrivado',
@@ -101,6 +75,8 @@ function connect(event) {
     			  }
     		  }
     	});
+    	
+    	username = alicePriv.userids[0].components.username
     }
     
     event.preventDefault();
@@ -133,30 +109,39 @@ function sendMessage(event) {
     
     /** TROCANDO DE CHAVE EM POSSIVEL ERRO FUTURO EM USERS EM PCs DIFERENTES*/
     $.ajax({
-		  url: 'chaveUser',
+		  url: 'chave1',
 		  success: function(chave1) {
-			 alicePub.armored_pgp_public = chave1
+			  if(chave1 === alicePub.armored_pgp_public){
+				  $.ajax({
+					  url: 'chave2',
+					  success: function(chave2) {
+						  alicePub.armored_pgp_public = chave2
+					  }
+				  });
+			  }else{
+				  alicePub.armored_pgp_public = chave1
+			  }
 			 
 			 // criptografando e assinando
-			 var params = {
-					 msg: messageInput.value,
-					 encrypt_for: alicePub,
-					 sign_with:   alicePriv
-			 }
-			 kbpgp.box(params, function(err, result_string, result_buffer) {
-				 
-				 if(messageContent && stompClient) {
-					 var chatMessage = {
-							 sender: username,
-							 content: result_string,
-							 type: 'CHAT'
-					 };
-					 
-					 stompClient.send("/app/chat.sendMessagePrivado", {}, JSON.stringify(chatMessage));
-					 messageInput.value = '';
-				 }
-				 
-			 });
+			  var params = {
+				  msg:         messageInput.value,
+				  encrypt_for: alicePub,
+				  sign_with:   alicePriv
+				};
+
+			  kbpgp.box (params, function(err, result_string, result_buffer) {
+				  if(messageContent && stompClient) {
+					  var chatMessage = {
+							  sender: username,
+							  content: result_string,
+							  type: 'CHAT'
+				 		};
+							 
+					  stompClient.send("/app/chat.sendMessagePrivado", {}, JSON.stringify(chatMessage));
+					  messageInput.value = '';
+				  }
+			  }); 
+			  
 			 // fim
 			}
     });
@@ -203,7 +188,7 @@ function onMessageReceived(payload) {
     var pgp_msg = message.content
     
     for (var i in kms) {
-      ring.add_key_manager(kms[i]);
+    	ring.add_key_manager(kms[i]);
     }
     
     kbpgp.unbox({keyfetch: ring, armored: pgp_msg }, function(err, literals) {

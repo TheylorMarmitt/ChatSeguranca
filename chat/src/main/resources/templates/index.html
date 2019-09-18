@@ -6,10 +6,23 @@
 <body>
 
 <div class="conteiner-fluid" align="center" style="margin-top:200px;">
-	<form method="get" id="form">
-	<input type="text" th:value="${nome}" name="nome" id="nome" placeholder="Digite seu nome" class="text-center"/>
+	<form method="post" id="form" enctype="multipart/form-data">
+	
+		<div>
+			<label>Chave Privada: </label> <input th:value="${filePriv}" type="file" name="filePriv" id="filePriv">
+		</div>
+		<div>
+			<label>Chave Pública: </label> <input th:value="${filePub}" type="file" name="filePub" id="filePub">
+		</div>
+		<div>
+			<label>Frase de segurança: </label> <input th:value="${frase}" type="text" name="frase" id="frase">
+		</div>
+	
+		<input type="text" th:value="${nome}" name="nome" id="nome" placeholder="Digite seu nome" class="text-center"/>
 	</form>
+	
 	<div class="row" style="margin-top: 10px;"></div>
+	
 	<button type="submit" form="form" formaction="/geral">Chat geral</button>
 	<button type="submit" form="form" formaction="/privado">Chat privado</button>
 </div>	

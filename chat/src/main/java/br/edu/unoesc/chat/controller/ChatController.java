@@ -37,7 +37,7 @@ public class ChatController {
 
 	private Simetrico simetrico = new Simetrico();
 
-	@GetMapping("/geral")
+	@PostMapping("/geral")
 	public String geral(@RequestParam(value = "nome") String nome, Model model) {
 		if (!certificadoService.buscaCertificado()) {
 			return "chat/conectar";
@@ -45,16 +45,6 @@ public class ChatController {
 
 		model.addAttribute("nome", nome);
 		return "chat/geral";
-	}
-
-	@GetMapping("/privado")
-	public String privado(@RequestParam(value = "nome") String nome, Model model) {
-		if (!certificadoService.buscaCertificado()) {
-			return "chat/conectar";
-		}
-
-		model.addAttribute("nome", nome);
-		return "chat/privado";
 	}
 
 	@GetMapping("/conectar")

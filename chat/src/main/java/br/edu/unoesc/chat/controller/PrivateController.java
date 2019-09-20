@@ -56,32 +56,32 @@ public class PrivateController {
 		return chatMessage;
 	}
 	
-	//  PUBLIC KEY
-	@RequestMapping(path = "/buscarPubKey")
-	public @ResponseBody String publicKey() throws IOException {
-		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
-		File certificado = new File(path + File.separator + "public_key.asc");
-		String dados = new String(Files.readAllBytes(certificado.toPath()));
-		return dados;
-	}
-	
-	//  PRIVATE KEY
-	@RequestMapping(path = "/buscarPrivKey")
-	public @ResponseBody String privateKey() throws IOException {
-		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
-		File certificado = new File(path + File.separator + "private_key.asc");
-		String dados = new String(Files.readAllBytes(certificado.toPath()));
-		return dados;
-	}
-	
-//  frase
-	@RequestMapping(path = "/fraseSeguranca")
-	public @ResponseBody String frase() throws IOException {
-		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
-		File frase = new File(path + File.separator + "frase_seguranca.txt");
-		String dados = new String(Files.readAllBytes(frase.toPath()));
-		return dados;
-	}
+//	//  PUBLIC KEY
+//	@RequestMapping(path = "/buscarPubKey")
+//	public @ResponseBody String publicKey() throws IOException {
+//		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
+//		File certificado = new File(path + File.separator + "public_key.asc");
+//		String dados = new String(Files.readAllBytes(certificado.toPath()));
+//		return dados;
+//	}
+//	
+//	//  PRIVATE KEY
+//	@RequestMapping(path = "/buscarPrivKey")
+//	public @ResponseBody String privateKey() throws IOException {
+//		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
+//		File certificado = new File(path + File.separator + "private_key.asc");
+//		String dados = new String(Files.readAllBytes(certificado.toPath()));
+//		return dados;
+//	}
+//	
+////  frase
+//	@RequestMapping(path = "/fraseSeguranca")
+//	public @ResponseBody String frase() throws IOException {
+//		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
+//		File frase = new File(path + File.separator + "frase_seguranca.txt");
+//		String dados = new String(Files.readAllBytes(frase.toPath()));
+//		return dados;
+//	}
 	
 	// quantidade de usuarios no privado
 	@RequestMapping(path = "/userPrivado")
@@ -96,17 +96,17 @@ public class PrivateController {
 	 *	compara com a chave e fica com a diferente.
 	 * @throws IOException 
 	 */
-	@RequestMapping(path = "/chaveUser")
-	public @ResponseBody String user() throws IOException {
-		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
-		File certificado = new File(path + File.separator + "private_key.asc");
-		String dados = new String(Files.readAllBytes(certificado.toPath()));
-		if(dados.contentEquals(chaveUser1)) {
-			return this.chaveUser2;
-		}
-		return this.chaveUser1;
-			
-	}
+//	@RequestMapping(path = "/chaveUser")
+//	public @ResponseBody String user() throws IOException {
+//		String path = System.getProperty("user.home")+File.separator+"Documents"+File.separator+"certificado";
+//		File certificado = new File(path + File.separator + "private_key.asc");
+//		String dados = new String(Files.readAllBytes(certificado.toPath()));
+//		if(dados.contentEquals(chaveUser1)) {
+//			return this.chaveUser2;
+//		}
+//		return this.chaveUser1;
+//			
+//	}
 	
 	@RequestMapping(path = "/chave1")
 	public @ResponseBody String user1(){

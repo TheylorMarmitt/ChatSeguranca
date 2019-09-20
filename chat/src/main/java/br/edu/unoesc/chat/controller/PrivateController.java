@@ -30,6 +30,10 @@ public class PrivateController {
 	public String privado(@RequestParam(value = "nome") String nome, @RequestParam("filePriv") MultipartFile filePriv, 
 			@RequestParam("filePub") MultipartFile filePub, String frase,  Model model) throws IOException {
 		
+		if(frase.isEmpty() || filePub.isEmpty() || filePriv.isEmpty()) {
+			return "index";
+		}
+		
 		if (!certificadoService.buscaCertificado()) {
 			return "chat/conectar";
 		}
@@ -41,6 +45,7 @@ public class PrivateController {
 		model.addAttribute("publica", publica);
 		model.addAttribute("privada", privada);
 		model.addAttribute("frase", frase);
+		
 		return "chat/privado";
 	}
 

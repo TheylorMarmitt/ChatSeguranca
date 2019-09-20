@@ -31,7 +31,7 @@ function connect(event) {
     privada = $('#privada').val().trim();
     publica = $('#publica').val().trim();
         
-    if(username) {
+//    if(username) {
     	
     	kbpgp.KeyManager.import_from_armored_pgp({
     		  armored: publica
@@ -77,7 +77,7 @@ function connect(event) {
     	});
     	
     	username = alicePriv.userids[0].components.username
-    }
+//    }
     
     event.preventDefault();
     

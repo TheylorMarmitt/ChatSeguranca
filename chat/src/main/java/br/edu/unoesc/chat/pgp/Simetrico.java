@@ -13,8 +13,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Simetrico {
 
-//	private static String secretKey = "12345678";
-//	private static String salt = "12345678";
 	
 	public String encrypt(String strToEncrypt, String secret) {
 		Security.setProperty("crypto.policy", "unlimited");
@@ -59,31 +57,4 @@ public class Simetrico {
 	}
 }
 	
-//	public String encrypt(String texto) throws Exception {
-//		Security.setProperty("crypto.policy", "unlimited");
-//		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-//		byte[] mensagem = texto.getBytes();
-//
-//		// Usando chave de 128-bits (16 bytes)
-//		byte[] chave = "novachaveaulaseg".getBytes();
-//		System.out.println("Tamanho da chave: " + chave.length);
-//
-//		// Encriptando...
-//		cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(chave, "AES"));
-//		byte[] encrypted = cipher.doFinal(mensagem);
-//		return new String(encrypted);
-//	}
-//
-//	public String decrypt(String texto) throws Exception {
-//		Security.setProperty("crypto.policy", "unlimited");
-//		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-//
-//		byte[] encrypted = texto.getBytes();
-//		byte[] chave = "novachaveaulaseg".getBytes();
-//
-//		// Decriptando...
-//		cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(chave, "AES"));
-//		byte[] decrypted = cipher.doFinal(encrypted);
-//
-//		return new String(decrypted);
-//	}
+

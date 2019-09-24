@@ -11,7 +11,7 @@
 //		
 //		pgpFactory.loadKeys(path + File.separator + "public_key.asc",
 //				path + File.separator + "private_key.asc",
-//				"theylor.marmitt@unoesc.edu.br");
+//				"email.com");
 //		
 //		String original = "Sridhar Jena";
 //		System.out.println("PLAIN DATA: " + original);
